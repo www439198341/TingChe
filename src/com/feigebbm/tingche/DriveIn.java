@@ -8,12 +8,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class Park extends HttpServlet {
+public class DriveIn extends HttpServlet {
 
 	/**
 		 * Constructor of the object.
 		 */
-	public Park() {
+	public DriveIn() {
 		super();
 	}
 
@@ -37,19 +37,14 @@ public class Park extends HttpServlet {
 		 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		//request.setCharacterEncoding("UTF-8");
 		String carNumber = request.getParameter("carNumber");
-		System.out.println(carNumber);
+		// ToDo 向数据库插入数据，并取得返回结果
 		
-		String resData="";
-		if(carNumber.equals("苏A·W526Z")){
-			resData="{'fee':5.20,'period':1800}";
-		}
+		System.out.println(carNumber);
 		PrintWriter out = response.getWriter();
-		out.println(resData);
+		out.print("200");
 		out.flush();
 		out.close();
-		
 		/*
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
@@ -63,8 +58,8 @@ public class Park extends HttpServlet {
 		out.println("  </BODY>");
 		out.println("</HTML>");
 		out.flush();
-		out.close();
-		*/
+		out.close();*/
+		
 	}
 
 	/**
@@ -79,19 +74,7 @@ public class Park extends HttpServlet {
 		 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-		out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-		out.println("<HTML>");
-		out.println("  <HEAD><TITLE>A Servlet</TITLE></HEAD>");
-		out.println("  <BODY>");
-		out.print("    This is ");
-		out.print(this.getClass());
-		out.println(", using the POST method");
-		out.println("  </BODY>");
-		out.println("</HTML>");
-		out.flush();
-		out.close();
+		doGet(request, response);
 	}
 
 	/**

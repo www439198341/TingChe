@@ -8,80 +8,95 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.feigebbm.utils.SqlHelper;
+import com.feigebbm.utils.ToUTF8String;
+
 public class DriveIn extends HttpServlet {
 
 	/**
-		 * Constructor of the object.
-		 */
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Constructor of the object.
+	 */
 	public DriveIn() {
 		super();
 	}
 
 	/**
-		 * Destruction of the servlet. <br>
-		 */
+	 * Destruction of the servlet. <br>
+	 */
 	public void destroy() {
 		super.destroy(); // Just puts "destroy" string in log
 		// Put your code here
 	}
 
 	/**
-		 * The doGet method of the servlet. <br>
-		 *
-		 * This method is called when a form has its tag value method equals to get.
-		 * 
-		 * @param request the request send by the client to the server
-		 * @param response the response send by the server to the client
-		 * @throws ServletException if an error occurred
-		 * @throws IOException if an error occurred
-		 */
+	 * The doGet method of the servlet. <br>
+	 *
+	 * This method is called when a form has its tag value method equals to get.
+	 * 
+	 * @param request
+	 *            the request send by the client to the server
+	 * @param response
+	 *            the response send by the server to the client
+	 * @throws ServletException
+	 *             if an error occurred
+	 * @throws IOException
+	 *             if an error occurred
+	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		String carNumber = request.getParameter("carNumber");
-		// ToDo 向数据库插入数据，并取得返回结果
+		doPost(request, response);
+
+	}
+
+	/**
+	 * The doPost method of the servlet. <br>
+	 *
+	 * This method is called when a form has its tag value method equals to
+	 * post.
+	 * 
+	 * @param request
+	 *            the request send by the client to the server
+	 * @param response
+	 *            the response send by the server to the client
+	 * @throws ServletException
+	 *             if an error occurred
+	 * @throws IOException
+	 *             if an error occurred
+	 */
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
 		
-		System.out.println(carNumber);
+		String carNumber = request.getParameter("carNumber");
+		String parkingInfo = request.getParameter("parkingInfo");
+		
+
+		// ToDo 向数据库插入数据，并取得返回结果
+		// 请求参数中应该包含：车牌号carNumber，入场时间parkin，停车场编号parkingNumber
+		String sql = "insert into parkinfo values(?, now() ,?,null,null,null)";
+		
+		String[] parameters = { carNumber, parkingInfo };
+
+		SqlHelper.executeUpdate(sql, parameters);
+
 		PrintWriter out = response.getWriter();
 		out.print("200");
 		out.flush();
 		out.close();
-		/*
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-		out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-		out.println("<HTML>");
-		out.println("  <HEAD><TITLE>A Servlet</TITLE></HEAD>");
-		out.println("  <BODY>");
-		out.print("    This is ");
-		out.print(this.getClass());
-		out.println(", using the GET method");
-		out.println("  </BODY>");
-		out.println("</HTML>");
-		out.flush();
-		out.close();*/
-		
+
 	}
 
 	/**
-		 * The doPost method of the servlet. <br>
-		 *
-		 * This method is called when a form has its tag value method equals to post.
-		 * 
-		 * @param request the request send by the client to the server
-		 * @param response the response send by the server to the client
-		 * @throws ServletException if an error occurred
-		 * @throws IOException if an error occurred
-		 */
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		doGet(request, response);
-	}
-
-	/**
-		 * Initialization of the servlet. <br>
-		 *
-		 * @throws ServletException if an error occurs
-		 */
+	 * Initialization of the servlet. <br>
+	 *
+	 * @throws ServletException
+	 *             if an error occurs
+	 */
 	public void init() throws ServletException {
 		// Put your code here
 	}

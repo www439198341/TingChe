@@ -61,7 +61,7 @@ public class SqlHelper {
 	// 得到连接
 	public static Connection getConnection() {
 		try {
-			url = "jdbc:mysql://192.168.1.64:3306/park?useUnicode=true&characterEncoding=UTF-8";
+			url = "jdbc:mysql://localhost:3306/park?useUnicode=true&characterEncoding=UTF-8";
 			username = "park";
 			driver = "com.mysql.jdbc.Driver";
 			password = "wangfei1013";

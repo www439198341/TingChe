@@ -50,6 +50,8 @@ public class Park extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		String carNumber = request.getParameter("carNumber");
 
+		System.out.println("I am servlet Park. I get carNumber from xcx. the number is:"+carNumber);
+		
 		String resData = "";
 		// 根据carNumber查询停车时长now()-parkin，停车场编号parkingnumber
 		String sql = "SELECT timestampdiff(HOUR,parkin,now()) parkh,timestampdiff(MINUTE,parkin,now()) parkm,parkingnumber FROM parkinfo WHERE carnumber = ?";

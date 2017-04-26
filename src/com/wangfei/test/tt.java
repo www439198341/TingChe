@@ -1,4 +1,4 @@
-package com.wangfei.testdb;
+package com.wangfei.test;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -8,20 +8,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.feigebbm.utils.SqlHelper;
-import com.feigebbm.utils.ToUTF8String;
 
-public class DriveIn extends HttpServlet {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class UpdateCarNo extends HttpServlet {
 
 	/**
 	 * Constructor of the object.
 	 */
-	public DriveIn() {
+	public UpdateCarNo() {
 		super();
 	}
 
@@ -69,26 +67,44 @@ public class DriveIn extends HttpServlet {
 	 *             if an error occurred
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
-		
-		String carNumber = request.getParameter("carNumber");
-		String parkingInfo = request.getParameter("parkingInfo");
-		
 
-		// ToDo 向数据库插入数据，并取得返回结果
-		// 请求参数中应该包含：车牌号carNumber，入场时间parkin，停车场编号parkingNumber
-		String sql = "insert into parkinfo values(?, now() ,?,null,null,null,false)";
-		
-		String[] parameters = { carNumber, parkingInfo };
+		String openid = request.getParameter("openid");
+		String addressList = request.getParameter("addressList");
+		System.out.println(openid);
+		System.out.println(addressList);
+		JSONArray array = null;
+		String carno[]=new String[3];
+		try {
+			array = new JSONArray(addressList);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
+		for(int i=0;i<array.length();i++){
+			try {
+				JSONObject jo = array.getJSONObject(i);
+				carno[i]=jo.getString("Address");
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		for(int i=0;i<carno.length;i++){
+			System.out.println(carno[i]);
+		}
+		// 以这两个参数，更新数据库
+		String sql = "update userinfo set carnumber1=?,carnumber2=?,carnumber3=? where openid=?";
+		String[] parameters = {carno[0],carno[1],carno[2],openid};
 		SqlHelper.executeUpdate(sql, parameters);
+		
 
 		PrintWriter out = response.getWriter();
-		out.print("200");
+		out.println("200");
 		out.flush();
 		out.close();
-
 	}
 
 	/**

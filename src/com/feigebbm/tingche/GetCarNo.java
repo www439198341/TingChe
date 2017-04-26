@@ -12,12 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.feigebbm.utils.SqlHelper;
 
-public class Login extends HttpServlet {
+public class GetCarNo extends HttpServlet {
 
 	/**
 		 * Constructor of the object.
 		 */
-	public Login() {
+	public GetCarNo() {
 		super();
 	}
 
@@ -60,61 +60,47 @@ public class Login extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		
-		// 得到请求参数
 		String openid = request.getParameter("openid");
-		String city = request.getParameter("city");
-		String country = request.getParameter("country");
-		String gender = request.getParameter("gender");
-		String language = request.getParameter("language");
-		String nickname = request.getParameter("nickname");
-		String province = request.getParameter("province");
-		
-		String resData = null;
-		String defaultCarNumber = null;
-		
-		// 客户端调用该方法，会返回一个值，根据这个返回值的不同，客户端采取相应的动作
-		// 100:必须绑定车牌号
-		// 200:有车牌号，但是没在停车场（没有未支付的停车信息）
-		// 300:有车牌号，并且在停车场（有位支付的停车信息）
-		// 查询数据库，看是否存在该openid的用户。若不存在，则注册。
-		// 若存在该用户，则查询该用户的默认车牌，若存在，获得默认车牌。
-		String sql = "select * from userinfo where openid = ?";
+		System.out.println(openid);
+		// 以openid为依据，查询该用户绑定的车牌号信息
+		String reString="";
+		String sql = "select * from userinfo where openid=?";
 		String[] parameters = {openid};
 		ResultSet rs = SqlHelper.executeQuery(sql, parameters);
+		String carno1 = null,carno2 = null,carno3 = null;
 		try {
-			if(!rs.next()){// 用户不存在，注册。此时返回必须绑定车牌号的信息。
-				sql = "insert into userinfo values(?,?,?,?,?,?,?,null,null,null,null,null)";
-				parameters=new String[]{openid,city,country,gender,language,nickname,province};
-				SqlHelper.executeUpdate(sql, parameters);
-				resData="100";
-			}else{// 用户存在，查询是否存在默认车牌号
-				sql = "select carnumber1 from userinfo where openid=?";
-				parameters = new String[]{openid};
-				rs = null;
-				rs = SqlHelper.executeQuery(sql, parameters);
-				if(rs.next()){// 获得默认车牌号
-					defaultCarNumber=rs.getString(1);
-					sql="select * from parkinfo where carnumber=? and iscompleted=0";
-					parameters=new String[]{defaultCarNumber};
-					rs = null;
-					rs = SqlHelper.executeQuery(sql, parameters);
-					if(rs.next()){// 有停车信息，返回300
-						resData="300";
-					}else{ // 无停车信息，返回200
-						resData="200";
-					}
-				}else{// 用户存在，但是没有车牌号
-					resData="100";
-				}
+			if(rs.next()){
+				carno1=rs.getString(8);
+				carno2 = rs.getString(9);
+				carno3 = rs.getString(10);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		SqlHelper.close(rs, SqlHelper.getPs(), SqlHelper.getCt());
+		
+		System.out.println(carno1);
+		System.out.println(carno2);
+		System.out.println(carno3);
+		
+		//[{"Address":"苏A·W526Z"},{"Address":"京A·12345"}]
+		// 对查询结果进行判断
+		if(carno1==null || carno1==""){
+			// 没有任何车辆信息，返回""
+			reString="[]";
+		}else if(carno2==null || carno2==""){
+			// 只有一个车牌号，返回[{"Address":"苏A·W526Z"}]
+			reString = "[{\"Address\":\""+carno1+"\"}]";
+		}else if(carno3==null || carno3==""){
+			// 有两个车牌，返回[{"Address":"苏A·W526Z"},{"Address":"京A·12345"}]
+			reString="[{\"Address\":\""+carno1+"\"},{\"Address\":\""+carno2+"\"}]";
+		}else{
+			// 有三个车牌，返回全部格式
+			reString="[{\"Address\":\""+carno1+"\"},{\"Address\":\""+carno2+"\"},{\"Address\":\""+carno3+"\"}]";
+		}
 		
 		
 		PrintWriter out = response.getWriter();
-		out.println(resData);
+		out.println(reString);
 		out.flush();
 		out.close();
 	}

@@ -25,12 +25,12 @@ public class tt {
 
 	public void testquery() throws SQLException {
 
-		String sql = "select * from userinfo";
-		ResultSet rs = SqlHelper.executeQuery(sql, null);
-		while (rs.next()) {
-			System.out.println(rs.getString("nickname"));
-		}
-		SqlHelper.close(rs, SqlHelper.getPs(), SqlHelper.getCt());
+//		String sql = "select * from userinfo";
+//		ResultSet rs = SqlHelper.executeQuery(sql, null);
+//		while (rs.next()) {
+//			System.out.println(rs.getString("nickname"));
+//		}
+//		SqlHelper.close(rs, SqlHelper.getPs(), SqlHelper.getCt());
 	}
 
 }

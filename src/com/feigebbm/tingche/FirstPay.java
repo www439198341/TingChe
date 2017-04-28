@@ -13,6 +13,11 @@ import com.feigebbm.utils.SqlHelper;
 public class FirstPay extends HttpServlet {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 		 * Constructor of the object.
 		 */
 	public FirstPay() {
@@ -55,15 +60,18 @@ public class FirstPay extends HttpServlet {
 		 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		System.out.println("FirstPay is called");
+		
 		response.setCharacterEncoding("UTF-8");
 		request.setCharacterEncoding("UTF-8");
 		
 		String carNumber = request.getParameter("carNumber");
 		System.out.println(carNumber);
 		
-		String sql = "update parkinfo set firstpay=now() where carnumber = ?";
+		String sql = "update parkinfo set firstpay=now() where carnumber = ? and iscompleted=0";
 		String[] parameters = {carNumber};
 		SqlHelper.executeUpdate(sql, parameters);
+		SqlHelper.close(SqlHelper.getPs(), SqlHelper.getCt());
 		
 		
 		PrintWriter out = response.getWriter();

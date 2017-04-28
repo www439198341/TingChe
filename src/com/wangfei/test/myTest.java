@@ -1,7 +1,6 @@
 package com.wangfei.test;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class myTest {
 	

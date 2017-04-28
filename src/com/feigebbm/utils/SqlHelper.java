@@ -1,8 +1,6 @@
 package com.feigebbm.utils;
 
-import java.io.FileInputStream;
 import java.sql.*;
-import java.util.Properties;
 
 public class SqlHelper {
 	// 定义需要的变量
@@ -27,9 +25,6 @@ public class SqlHelper {
 	private static String username = "";
 	private static String driver = "";
 	private static String password = "";
-
-	private static Properties pp = null;
-	private static FileInputStream fis = null;
 
 	/*
 	// 加载驱动，只需要一次
@@ -89,7 +84,7 @@ public class SqlHelper {
 			e.printStackTrace();
 			throw new RuntimeException(e.getMessage());
 		} finally {
-
+			
 		}
 
 		return rs;
@@ -158,6 +153,27 @@ public class SqlHelper {
 			}
 			rs = null;
 		}
+		if (ps != null) {
+			try {
+				ps.close();
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+			ps = null;
+		}
+		if (ct != null) {
+			try {
+				ct.close();
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+			ct = null;
+		}
+	}
+	
+	// 关闭资源的函数
+	public static void close(Statement ps, Connection ct) {
+		
 		if (ps != null) {
 			try {
 				ps.close();

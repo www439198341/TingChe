@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.feigebbm.utils.SqlHelper;
-import com.feigebbm.utils.ToUTF8String;
 
 public class DriveIn extends HttpServlet {
 
@@ -69,20 +68,31 @@ public class DriveIn extends HttpServlet {
 	 *             if an error occurred
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		System.out.println("DriveIn is called");
+		
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		
 		String carNumber = request.getParameter("carNumber");
 		String parkingInfo = request.getParameter("parkingInfo");
+		boolean isopengate = Boolean.parseBoolean(request.getParameter("isopengate"));
 		
+		int insertValue;
+		if(isopengate){
+			insertValue=0;
+		}else{
+			insertValue=1;
+		}
 
 		// ToDo 向数据库插入数据，并取得返回结果
 		// 请求参数中应该包含：车牌号carNumber，入场时间parkin，停车场编号parkingNumber
-		String sql = "insert into parkinfo values(?, now() ,?,null,null,null,false)";
+		String sql = "insert into parkinfo values(?, now() ,?,null,null,null,"+insertValue+")";
 		
 		String[] parameters = { carNumber, parkingInfo };
 
 		SqlHelper.executeUpdate(sql, parameters);
+		SqlHelper.close(SqlHelper.getPs(), SqlHelper.getCt());
 
 		PrintWriter out = response.getWriter();
 		out.print("200");

@@ -17,6 +17,11 @@ import com.feigebbm.utils.SqlHelper;
 public class UpdateCarNo extends HttpServlet {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Constructor of the object.
 	 */
 	public UpdateCarNo() {
@@ -68,6 +73,8 @@ public class UpdateCarNo extends HttpServlet {
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		System.out.println("UpdateCarNo is called");
+		
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
@@ -99,6 +106,7 @@ public class UpdateCarNo extends HttpServlet {
 		String sql = "update userinfo set carnumber1=?,carnumber2=?,carnumber3=? where openid=?";
 		String[] parameters = {carno[0],carno[1],carno[2],openid};
 		SqlHelper.executeUpdate(sql, parameters);
+		SqlHelper.close(SqlHelper.getPs(), SqlHelper.getCt());
 		
 
 		PrintWriter out = response.getWriter();

@@ -15,6 +15,11 @@ import com.feigebbm.utils.SqlHelper;
 public class Park extends HttpServlet {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Constructor of the object.
 	 */
 	public Park() {
@@ -45,11 +50,13 @@ public class Park extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		System.out.println("Park is called");
+		
 		response.setCharacterEncoding("UTF-8");
 		request.setCharacterEncoding("UTF-8");
 		String openid = request.getParameter("openid");
 		String carNumber = null;
-		System.out.println("I am servlet Park. I get openid from payment. the openid is:"+openid);
+		//System.out.println("I am servlet Park. I get openid from payment. the openid is:"+openid);
 		
 		String resData = "";
 		// 根据openid查询停车时长now()-parkin，停车场编号parkingnumber
@@ -69,24 +76,26 @@ public class Park extends HttpServlet {
 				parkTime = parkh + "小时" + parkm + "分钟";
 				parkingnumber = rs.getString("parkingnumber");
 			}
+			SqlHelper.close(rs, SqlHelper.getPs(), SqlHelper.getCt());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		System.out.println(parkTime);
+		//System.out.println(parkTime);
 		if (parkTime == null) {
 			resData = "{\"isParking\":false}";
-			System.out.println("parkTime from park "+parkTime);
+			//System.out.println("parkTime from park "+parkTime);
 		} else {
 			// 根据parkingnumber查询停车场信息parkingname
 			sql = "select parkingname from parkinginfo where parkingnumber=?";
 			parameters = new String[] { parkingnumber };
-			rs = SqlHelper.executeQuery(sql, parameters);
+			ResultSet rss = SqlHelper.executeQuery(sql, parameters);
 			String parkLocation = null;
 			try {
-				while (rs.next()) {
-					parkLocation = rs.getString("parkingname");
+				while (rss.next()) {
+					parkLocation = rss.getString("parkingname");
 				}
+				SqlHelper.close(rss, SqlHelper.getPs(), SqlHelper.getCt());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -95,7 +104,7 @@ public class Park extends HttpServlet {
 			// TODO 计算应交费用
 			fee = "10.3";
 			// 关闭数据库资源
-			SqlHelper.close(rs, SqlHelper.getPs(), SqlHelper.getCt());
+			
 			
 			// 根据openid查询carNumber1
 			sql = "select carnumber1 from userinfo where openid = ?";
@@ -106,6 +115,7 @@ public class Park extends HttpServlet {
 				while (rrr.next()) {
 					carNumber=rrr.getString(1);
 				}
+				SqlHelper.close(rrr, SqlHelper.getPs(), SqlHelper.getCt());
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -114,7 +124,7 @@ public class Park extends HttpServlet {
 					+ "\",\"fee\":" + fee + "}";
 		}
 
-		SqlHelper.close(rs, SqlHelper.getPs(), SqlHelper.getCt());
+		
 		PrintWriter out = response.getWriter();
 		out.println(resData);
 		out.flush();

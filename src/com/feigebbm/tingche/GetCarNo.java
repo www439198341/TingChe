@@ -15,6 +15,11 @@ import com.feigebbm.utils.SqlHelper;
 public class GetCarNo extends HttpServlet {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 		 * Constructor of the object.
 		 */
 	public GetCarNo() {
@@ -74,6 +79,7 @@ public class GetCarNo extends HttpServlet {
 				carno2 = rs.getString(9);
 				carno3 = rs.getString(10);
 			}
+			SqlHelper.close(rs, SqlHelper.getPs(), SqlHelper.getCt());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

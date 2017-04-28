@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.enterprise.inject.ResolutionException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -48,14 +47,14 @@ public class Park extends HttpServlet {
 
 		response.setCharacterEncoding("UTF-8");
 		request.setCharacterEncoding("UTF-8");
-		String carNumber = request.getParameter("carNumber");
-
-		System.out.println("I am servlet Park. I get carNumber from xcx. the number is:"+carNumber);
+		String openid = request.getParameter("openid");
+		String carNumber = null;
+		System.out.println("I am servlet Park. I get openid from payment. the openid is:"+openid);
 		
 		String resData = "";
-		// 根据carNumber查询停车时长now()-parkin，停车场编号parkingnumber
-		String sql = "SELECT timestampdiff(HOUR,parkin,now()) parkh,timestampdiff(MINUTE,parkin,now()) parkm,parkingnumber FROM parkinfo WHERE carnumber = ?";
-		String[] parameters = { carNumber };
+		// 根据openid查询停车时长now()-parkin，停车场编号parkingnumber
+		String sql = "SELECT timestampdiff(HOUR,parkin,now()) parkh,timestampdiff(MINUTE,parkin,now()) parkm,parkingnumber FROM parkinfo WHERE carnumber = (select carnumber1 from userinfo where openid = ?)";
+		String[] parameters = { openid };
 		ResultSet rs = SqlHelper.executeQuery(sql, parameters);
 
 		String parkTime = null;
@@ -77,7 +76,7 @@ public class Park extends HttpServlet {
 		System.out.println(parkTime);
 		if (parkTime == null) {
 			resData = "{\"isParking\":false}";
-			System.out.println(parkTime);
+			System.out.println("parkTime from park "+parkTime);
 		} else {
 			// 根据parkingnumber查询停车场信息parkingname
 			sql = "select parkingname from parkinginfo where parkingnumber=?";
@@ -97,10 +96,25 @@ public class Park extends HttpServlet {
 			fee = "10.3";
 			// 关闭数据库资源
 			SqlHelper.close(rs, SqlHelper.getPs(), SqlHelper.getCt());
-			resData = "{\"carNumber\":\"苏A·W526Z\",\"parkTime\":\"" + parkTime + "\",\"parkLocation\":\"" + parkLocation
+			
+			// 根据openid查询carNumber1
+			sql = "select carnumber1 from userinfo where openid = ?";
+			parameters = new String[]{openid};
+			ResultSet rrr = SqlHelper.executeQuery(sql, parameters);
+			
+			try {
+				while (rrr.next()) {
+					carNumber=rrr.getString(1);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			SqlHelper.close(rrr, SqlHelper.getPs(), SqlHelper.getCt());
+			resData = "{\"carNumber\":\""+carNumber+"\",\"parkTime\":\"" + parkTime + "\",\"parkLocation\":\"" + parkLocation
 					+ "\",\"fee\":" + fee + "}";
 		}
 
+		SqlHelper.close(rs, SqlHelper.getPs(), SqlHelper.getCt());
 		PrintWriter out = response.getWriter();
 		out.println(resData);
 		out.flush();

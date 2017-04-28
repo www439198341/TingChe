@@ -73,8 +73,8 @@ public class UpdateCarNo extends HttpServlet {
 
 		String openid = request.getParameter("openid");
 		String addressList = request.getParameter("addressList");
-		System.out.println(openid);
-		System.out.println(addressList);
+		System.out.println("openid from updatecarno"+openid);
+		System.out.println("addressList from updatecarno"+addressList);
 		JSONArray array = null;
 		String carno[]=new String[3];
 		try {

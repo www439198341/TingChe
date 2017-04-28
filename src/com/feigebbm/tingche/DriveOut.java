@@ -62,38 +62,53 @@ public class DriveOut extends HttpServlet {
 		
 		String carNumber = request.getParameter("carNumber");
 		String parkingInfo = request.getParameter("parkingInfo");
+		boolean isOpenGate = Boolean.parseBoolean(request.getParameter("isOpenGate"));
 		
-		// 写入出场时间，并计算出场时间与入场时间差
-		String sql = "update parkinfo set parkout=now() where carnumber = ?";
-		String[] parameters = {carNumber};
-		SqlHelper.executeUpdate(sql, parameters);
-		
-		String diffTime = null;
-		sql = "select timestampdiff(MINUTE,firstpay,parkout) difftime from parkinfo where carnumber = ?";
-		ResultSet rs = SqlHelper.executeQuery(sql, parameters);
-		try {
-			while(rs.next()){
-				diffTime = rs.getString("difftime");
+		if(!isOpenGate){// 表示服务器接收到出场拍照系统发来的消息
+			// 写入出场时间，并计算出场时间与入场时间差
+			String sql = "update parkinfo set parkout=now() where carnumber = ? and parkingnumber = ?";
+			String[] parameters = {carNumber,parkingInfo};
+			SqlHelper.executeUpdate(sql, parameters);
+			
+			String diffTime = null;
+			sql = "select timestampdiff(MINUTE,firstpay,parkout) difftime from parkinfo where carnumber = ? and parkingnumber = ?";
+			ResultSet rs = SqlHelper.executeQuery(sql, parameters);
+			try {
+				while(rs.next()){
+					diffTime = rs.getString("difftime");
+					System.out.println(diffTime);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+			SqlHelper.close(rs, SqlHelper.getPs(), SqlHelper.getCt());
+			
+			String resData = "";
+			if(Integer.parseInt(diffTime)>15){
+				// 超时
+				resData = "500";
+				System.out.println("超时");
+			}else{
+				// 不超时
+				resData = "200";
+				System.out.println("正常退出");
+			}
+			PrintWriter out = response.getWriter();
+			out.print(resData);
+			out.flush();
+			out.close();
+		}else { // 表示系统接收到抬杆离场发来的消息
+			String sql = "update parkinfo set iscompleted=true where carnumber = ? and parkingnumber = ?";
+			String[] parameters = {carNumber,parkingInfo};
+			SqlHelper.executeUpdate(sql, parameters);
+			String resData = "200";
+			PrintWriter out = response.getWriter();
+			out.print(resData);
+			out.flush();
+			out.close();
 		}
-		SqlHelper.close(rs, SqlHelper.getPs(), SqlHelper.getCt());
 		
-		String resData = "";
-		if(Integer.parseInt(diffTime)>15){
-			// 超时
-			resData = "500";
-			System.out.println("超时");
-		}else{
-			// 不超时
-			resData = "200";
-			System.out.println("正常退出");
-		}
-		PrintWriter out = response.getWriter();
-		out.print(resData);
-		out.flush();
-		out.close();
+		
 	}
 
 	/**
